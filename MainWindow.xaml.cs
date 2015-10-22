@@ -23,8 +23,8 @@ namespace PathEdit
 		private ObservableCollection<string> data;
 		private Hive hive = Hive.User;
 		private readonly string originalTitle;
-	    private List<string> cleanData; 
-        private DispatcherTimer tmr=new DispatcherTimer();
+		private List<string> cleanData; 
+		private DispatcherTimer tmr=new DispatcherTimer();
 
 		public MainWindow()
 		{
@@ -32,19 +32,20 @@ namespace PathEdit
 			originalTitle = Title;
 			ReadCurrentValues();
 			EnableButtons();
-            tmr.Interval = TimeSpan.FromSeconds(1);
-            tmr.Tick+=tmr_Tick;
+			tmr.Interval = TimeSpan.FromSeconds(1);
+			tmr.Tick+=tmr_Tick;
+			tmr.Start();
 		}
 
-	    protected override void OnClosing(CancelEventArgs e)
-	    {
-	        if (UserDeclinesToAbandon())
-	            e.Cancel = true;
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			if (UserDeclinesToAbandon())
+				e.Cancel = true;
 
-	        base.OnClosing(e);
-	    }
+			base.OnClosing(e);
+		}
 
-	    #region Button Handlers
+		#region Button Handlers
 
 		private void OnAddClick(object sender, RoutedEventArgs e)
 		{
@@ -64,8 +65,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to edit",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -89,8 +90,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to delete",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -104,8 +105,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to move up",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -125,8 +126,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to move down",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -141,10 +142,10 @@ namespace PathEdit
 
 		private void OnSwitchClick(object sender, RoutedEventArgs e)
 		{
-            if (UserDeclinesToAbandon())
-                return;
+			if (UserDeclinesToAbandon())
+				return;
 
-            switch (hive)
+			switch (hive)
 			{
 				case Hive.System:
 					hive = Hive.User;
@@ -163,29 +164,29 @@ namespace PathEdit
 		{
 			try
 			{
-			    Save();
-                StatusText.Text = "Hive saved";
-                tmr.Start();
-                /*
-			    MessageBox.Show("The operation completed successfully.",
-				                "Good News",
-				                MessageBoxButton.OK,
-				                MessageBoxImage.Information);
-                 */
+				Save();
+				StatusText.Text = "Hive saved";
+				tmr.Start();
+				/*
+				MessageBox.Show("The operation completed successfully.",
+								"Good News",
+								MessageBoxButton.OK,
+								MessageBoxImage.Information);
+				 */
 			}
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-				                MessageBoxButton.OK, MessageBoxImage.Warning);
+								MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
 
-        private void tmr_Tick(object sender, EventArgs e)
-        {
-            StatusText.Text = "";
-        }
+		private void tmr_Tick(object sender, EventArgs e)
+		{
+			StatusText.Text = "";
+		}
 
-	    private void OnCancelClick(object sender, RoutedEventArgs e)
+		private void OnCancelClick(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
@@ -204,7 +205,7 @@ namespace PathEdit
 
 		#region Helpers
 
-	    private void ReadCurrentValues()
+		private void ReadCurrentValues()
 		{
 			Title = string.Format("{0} - {1}", originalTitle, hive);
 
@@ -212,7 +213,7 @@ namespace PathEdit
 			{
 				var editor = new RegistryEditor();
 				data = editor.GetPathStrings(hive);
-			    cleanData = CloneData(data);
+				cleanData = CloneData(data);
 
 				if (data.Count == 0)
 					return;
@@ -222,71 +223,71 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-				                MessageBoxButton.OK, MessageBoxImage.Warning);
+								MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
 
-	    private bool UserDeclinesToAbandon()
-	    {
-	        if (DataAreClean())
-	            return false;
+		private bool UserDeclinesToAbandon()
+		{
+			if (DataAreClean())
+				return false;
 
-	        MessageBoxResult result = 
-                MessageBox.Show("Data have changed. Save first?",
-                Title,
-                MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+			MessageBoxResult result = 
+				MessageBox.Show("Data have changed. Save first?",
+				Title,
+				MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
 
-	        switch (result)
-	        {
-	            case MessageBoxResult.Cancel:
-	                return true;
-                case MessageBoxResult.OK:
-                case MessageBoxResult.Yes:
-	                return TriedToSaveButFailed();
-	            case MessageBoxResult.No:
-	                return false;
-	            default:
-	                throw new ArgumentOutOfRangeException();
-	        }
-	    }
+			switch (result)
+			{
+				case MessageBoxResult.Cancel:
+					return true;
+				case MessageBoxResult.OK:
+				case MessageBoxResult.Yes:
+					return TriedToSaveButFailed();
+				case MessageBoxResult.No:
+					return false;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
 
-	    private bool DataAreClean()
-	    {
-	        if (data == null || cleanData == null)
-	            return true;
-	        if (data.Count != cleanData.Count)
-	            return false;
-	        var k = data.Zip(cleanData, (a, b) => a == b).All(x => x);
-	        return k;
-	    }
+		private bool DataAreClean()
+		{
+			if (data == null || cleanData == null)
+				return true;
+			if (data.Count != cleanData.Count)
+				return false;
+			var k = data.Zip(cleanData, (a, b) => a == b).All(x => x);
+			return k;
+		}
 
-	    private bool TriedToSaveButFailed()
-	    {
-	        try
-	        {
-	            Save();
-	            return false;
-	        }
-            catch (Exception x)
-            {
-                MessageBox.Show(x.Message, Caption,
-                                MessageBoxButton.OK, MessageBoxImage.Warning);
-                return true;
-            }
-        }
+		private bool TriedToSaveButFailed()
+		{
+			try
+			{
+				Save();
+				return false;
+			}
+			catch (Exception x)
+			{
+				MessageBox.Show(x.Message, Caption,
+								MessageBoxButton.OK, MessageBoxImage.Warning);
+				return true;
+			}
+		}
 
-	    private void Save()
-	    {
-	        var editor = new RegistryEditor();
-	        editor.SetPathStrings(hive, data);
-	    }
+		private void Save()
+		{
+			var editor = new RegistryEditor();
+			editor.SetPathStrings(hive, data);
+		}
 
-	    private static List<string> CloneData(IEnumerable<string> list)
-	    {
-	        return new List<string>(list);
-	    }
+		private static List<string> CloneData(IEnumerable<string> list)
+		{
+			return new List<string>(list);
+		}
 
-	    private void EnableButtons()
+		private void EnableButtons()
 		{
 			int x = ListBox.SelectedIndex;
 			bool isEnabled = x >= 0;
