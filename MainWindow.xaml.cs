@@ -7,7 +7,10 @@
 //---------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,7 +21,8 @@ namespace PathEdit
 		private const string Caption = "Unexpected Happening";
 		private ObservableCollection<string> data;
 		private Hive hive = Hive.User;
-		private string originalTitle;
+		private readonly string originalTitle;
+	    private List<string> cleanData; 
 
 		public MainWindow()
 		{
@@ -28,7 +32,15 @@ namespace PathEdit
 			EnableButtons();
 		}
 
-		#region Button Handlers
+	    protected override void OnClosing(CancelEventArgs e)
+	    {
+	        if (UserDeclinesToAbandon())
+	            e.Cancel = true;
+
+	        base.OnClosing(e);
+	    }
+
+	    #region Button Handlers
 
 		private void OnAddClick(object sender, RoutedEventArgs e)
 		{
@@ -125,7 +137,10 @@ namespace PathEdit
 
 		private void OnSwitchClick(object sender, RoutedEventArgs e)
 		{
-			switch (hive)
+            if (UserDeclinesToAbandon())
+                return;
+
+            switch (hive)
 			{
 				case Hive.System:
 					hive = Hive.User;
@@ -144,9 +159,8 @@ namespace PathEdit
 		{
 			try
 			{
-				var editor = new RegistryEditor();
-				editor.SetPathStrings(hive, data);
-				MessageBox.Show("The operation completed successfully.",
+			    Save();
+			    MessageBox.Show("The operation completed successfully.",
 				                "Good News",
 				                MessageBoxButton.OK,
 				                MessageBoxImage.Information);
@@ -158,7 +172,7 @@ namespace PathEdit
 			}
 		}
 
-		private void OnCancelClick(object sender, RoutedEventArgs e)
+	    private void OnCancelClick(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
@@ -177,7 +191,7 @@ namespace PathEdit
 
 		#region Helpers
 
-		private void ReadCurrentValues()
+	    private void ReadCurrentValues()
 		{
 			Title = string.Format("{0} - {1}", originalTitle, hive);
 
@@ -185,6 +199,7 @@ namespace PathEdit
 			{
 				var editor = new RegistryEditor();
 				data = editor.GetPathStrings(hive);
+			    cleanData = CloneData(data);
 
 				if (data.Count == 0)
 					return;
@@ -198,7 +213,67 @@ namespace PathEdit
 			}
 		}
 
-		private void EnableButtons()
+	    private bool UserDeclinesToAbandon()
+	    {
+	        if (DataAreClean())
+	            return false;
+
+	        MessageBoxResult result = 
+                MessageBox.Show("Data have changed. Save first?",
+                Title,
+                MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+
+	        switch (result)
+	        {
+	            case MessageBoxResult.Cancel:
+	                return true;
+                case MessageBoxResult.OK:
+                case MessageBoxResult.Yes:
+	                return TriedToSaveButFailed();
+	            case MessageBoxResult.No:
+	                return false;
+	            default:
+	                throw new ArgumentOutOfRangeException();
+	        }
+	    }
+
+	    private bool DataAreClean()
+	    {
+	        if (data == null || cleanData == null)
+	            return true;
+	        if (data.Count != cleanData.Count)
+	            return false;
+	        var k = data.Zip(cleanData, (a, b) => a == b).All(x => x);
+	        return k;
+	    }
+
+	    private bool TriedToSaveButFailed()
+	    {
+	        try
+	        {
+	            Save();
+	            return false;
+	        }
+            catch (Exception x)
+            {
+                MessageBox.Show(x.Message, Caption,
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return true;
+            }
+        }
+
+	    private void Save()
+	    {
+	        var editor = new RegistryEditor();
+	        editor.SetPathStrings(hive, data);
+	    }
+
+	    private static List<string> CloneData(IEnumerable<string> list)
+	    {
+	        return new List<string>(list);
+	    }
+
+	    private void EnableButtons()
 		{
 			int x = ListBox.SelectedIndex;
 			bool isEnabled = x >= 0;

@@ -26,6 +26,7 @@
 		<TextBox Grid.Row="1" x:Name="TextBox" Height="23"/>
 		<StackPanel Grid.Row="2" Orientation="Horizontal"
 								HorizontalAlignment="Center">
+			<Button Click="BrowseButton_Click">Browse...</Button>
 			<Button IsDefault="True" Click="OkButton_Click">OK</Button>
 			<Button IsCancel="True">Cancel</Button>
 		</StackPanel>
