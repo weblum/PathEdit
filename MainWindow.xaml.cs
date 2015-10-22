@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace PathEdit
 {
@@ -23,6 +24,7 @@ namespace PathEdit
 		private Hive hive = Hive.User;
 		private readonly string originalTitle;
 	    private List<string> cleanData; 
+        private DispatcherTimer tmr=new DispatcherTimer();
 
 		public MainWindow()
 		{
@@ -30,6 +32,8 @@ namespace PathEdit
 			originalTitle = Title;
 			ReadCurrentValues();
 			EnableButtons();
+            tmr.Interval = TimeSpan.FromSeconds(1);
+            tmr.Tick+=tmr_Tick;
 		}
 
 	    protected override void OnClosing(CancelEventArgs e)
@@ -160,10 +164,14 @@ namespace PathEdit
 			try
 			{
 			    Save();
+                StatusText.Text = "Hive saved";
+                tmr.Start();
+                /*
 			    MessageBox.Show("The operation completed successfully.",
 				                "Good News",
 				                MessageBoxButton.OK,
 				                MessageBoxImage.Information);
+                 */
 			}
 			catch (Exception x)
 			{
@@ -171,6 +179,11 @@ namespace PathEdit
 				                MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
+
+        private void tmr_Tick(object sender, EventArgs e)
+        {
+            StatusText.Text = "";
+        }
 
 	    private void OnCancelClick(object sender, RoutedEventArgs e)
 		{
