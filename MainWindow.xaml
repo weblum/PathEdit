@@ -39,7 +39,7 @@
 		</StackPanel>
 		<StatusBar x:Name="sBar" Grid.Row="1" Background="White">
             <StatusBarItem>
-                <TextBlock Name="StatusText" Foreground="Red" Text="© 2015 WEBlum" />
+                <TextBlock Name="StatusText" Foreground="Blue" Text="© 2015 WEBlum" />
             </StatusBarItem>
         </StatusBar>
 	</Grid>
