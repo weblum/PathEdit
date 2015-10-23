@@ -20,11 +20,11 @@ namespace PathEdit
 	public partial class MainWindow
 	{
 		private const string Caption = "Unexpected Happening";
+		private readonly string originalTitle;
+		private readonly DispatcherTimer timer = new DispatcherTimer();
+		private List<string> cleanData;
 		private ObservableCollection<string> data;
 		private Hive hive = Hive.User;
-		private readonly string originalTitle;
-		private List<string> cleanData; 
-		private DispatcherTimer tmr=new DispatcherTimer();
 
 		public MainWindow()
 		{
@@ -32,9 +32,9 @@ namespace PathEdit
 			originalTitle = Title;
 			ReadCurrentValues();
 			EnableButtons();
-			tmr.Interval = TimeSpan.FromSeconds(1);
-			tmr.Tick+=tmr_Tick;
-			tmr.Start();
+			timer.Interval = TimeSpan.FromSeconds(1);
+			timer.Tick += Timer_Tick;
+			timer.Start();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -65,8 +65,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to edit",
-								"Selection Error", MessageBoxButton.OK,
-								MessageBoxImage.Warning);
+				                "Selection Error", MessageBoxButton.OK,
+				                MessageBoxImage.Warning);
 				return;
 			}
 
@@ -90,8 +90,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to delete",
-								"Selection Error", MessageBoxButton.OK,
-								MessageBoxImage.Warning);
+				                "Selection Error", MessageBoxButton.OK,
+				                MessageBoxImage.Warning);
 				return;
 			}
 
@@ -105,8 +105,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to move up",
-								"Selection Error", MessageBoxButton.OK,
-								MessageBoxImage.Warning);
+				                "Selection Error", MessageBoxButton.OK,
+				                MessageBoxImage.Warning);
 				return;
 			}
 
@@ -126,8 +126,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to move down",
-								"Selection Error", MessageBoxButton.OK,
-								MessageBoxImage.Warning);
+				                "Selection Error", MessageBoxButton.OK,
+				                MessageBoxImage.Warning);
 				return;
 			}
 
@@ -166,7 +166,7 @@ namespace PathEdit
 			{
 				Save();
 				StatusText.Text = "Hive saved";
-				tmr.Start();
+				timer.Start();
 				/*
 				MessageBox.Show("The operation completed successfully.",
 								"Good News",
@@ -177,13 +177,8 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-								MessageBoxButton.OK, MessageBoxImage.Warning);
+				                MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
-		}
-
-		private void tmr_Tick(object sender, EventArgs e)
-		{
-			StatusText.Text = "";
 		}
 
 		private void OnCancelClick(object sender, RoutedEventArgs e)
@@ -196,9 +191,15 @@ namespace PathEdit
 		#region Other Event Handlers
 
 		private void ListBox_SelectionChanged(object sender,
-			SelectionChangedEventArgs e)
+		                                      SelectionChangedEventArgs e)
 		{
 			EnableButtons();
+		}
+
+		private void Timer_Tick(object sender, EventArgs e)
+		{
+			timer.Stop();
+			StatusText.Text = "";
 		}
 
 		#endregion
@@ -223,7 +224,7 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-								MessageBoxButton.OK, MessageBoxImage.Warning);
+				                MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
 
@@ -232,10 +233,10 @@ namespace PathEdit
 			if (DataAreClean())
 				return false;
 
-			MessageBoxResult result = 
+			MessageBoxResult result =
 				MessageBox.Show("Data have changed. Save first?",
-				Title,
-				MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+				                Title,
+				                MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
 
 			switch (result)
 			{
@@ -257,7 +258,7 @@ namespace PathEdit
 				return true;
 			if (data.Count != cleanData.Count)
 				return false;
-			var k = data.Zip(cleanData, (a, b) => a == b).All(x => x);
+			bool k = data.Zip(cleanData, (a, b) => a == b).All(x => x);
 			return k;
 		}
 
@@ -271,7 +272,7 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-								MessageBoxButton.OK, MessageBoxImage.Warning);
+				                MessageBoxButton.OK, MessageBoxImage.Warning);
 				return true;
 			}
 		}
@@ -280,6 +281,7 @@ namespace PathEdit
 		{
 			var editor = new RegistryEditor();
 			editor.SetPathStrings(hive, data);
+			cleanData = CloneData(data);
 		}
 
 		private static List<string> CloneData(IEnumerable<string> list)
