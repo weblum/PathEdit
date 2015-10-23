@@ -32,7 +32,7 @@ namespace PathEdit
 			originalTitle = Title;
 			ReadCurrentValues();
 			EnableButtons();
-			timer.Interval = TimeSpan.FromSeconds(1);
+			timer.Interval = TimeSpan.FromSeconds(2);
 			timer.Tick += Timer_Tick;
 			timer.Start();
 		}
