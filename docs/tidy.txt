@@ -1,0 +1,8 @@
+tidy-mark: no
+output-xhtml: yes
+add-xml-decl: yes
+char-encoding: utf8
+indent: auto
+indent-spaces: 3
+wrap: 100
+doctype: auto
