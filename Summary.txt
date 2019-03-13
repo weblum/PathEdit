@@ -1,0 +1,26 @@
+Sunday, September 27, 2015   6 pm
+
+C# project in WPF to display a user's PATH variable and allow him to edit it
+and save it back to the registry and notify the system that it has changed by
+using the WM_SETTINGCHANGE message.
+
+This project also demonstates a hack to overcome the WPF limitation that no
+way exists to display a resizable window that does not have a maximize box or
+minimize box.
+
+I wanted to restrict the height of the window because it just did not make
+sense to make it any higher than the controls' heights.  But I wanted to
+allow the user to make the window wider in case he needed to enter a very
+long string without scrolling.  When you restrict the height and then
+maximize the window, it looks really weird, so I wanted to make that
+impossible.  But in WPF, you can't do that.
+
+STACK OVERFLOW FLAME:
+
+Somebody asked the exact question:  "Is there an option to disable the
+maximize button while keeping the resize feature?"  And the fucking asshole
+that replied did not answer the question.  He essentially said it was a
+stupid question.  His exact words were:  "Why would you want to disable the
+maximize button, yet allow the window to be resized?"  I want to know why
+this shithead thinks it is more important for him to know why somebody asked
+the question than it is to answer the fucking question?!
