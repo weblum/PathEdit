@@ -60,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EditItem.cs" />
     <Compile Include="DirectoryBrowser.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Hive.cs" />
