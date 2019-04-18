@@ -7,7 +7,6 @@
 // Copyright (C) 2019 William E. Blum.  All rights reserved.
 //---------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.IO;
@@ -16,21 +15,15 @@ namespace PathEdit
 {
 	public partial class App //  : Application
 	{
-		private const string Title = "Path Editor";
-
-		#region Overrides of Application
-
+        #region Overrides of Application
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			if (e.Args.Length > 0)
 				DoCommandsAndExit(e);
 			else
 				new MainWindow().Show();
-
-
 			base.OnStartup(e);
 		}
-
 		#endregion
 
 		private void DoCommandsAndExit(StartupEventArgs e)
@@ -40,41 +33,29 @@ namespace PathEdit
 				EditItemList = ProcessScriptFile(e.Args[0]);
 			else
 				EditItemList = ProcessCommandLine(e.Args);
-			ProcessActions(EditItemList);
+            if (EditItemList!=null)
+    			ProcessActions(EditItemList);
 
 			Shutdown();
 		}
 
 		private static List<EditItem> ProcessScriptFile(string FileName)
         {
-	        return new List<EditItem>();
+            string[] lines = File.ReadAllLines(FileName);
+            return EditItem.PrepareEditList(lines);
         }
 
         private static List<EditItem> ProcessCommandLine(string[] args)
         {
-	        var result = new List<EditItem>();
-
-	        try
-	        {
-		        EditItem item = new EditItem();
-		        item.Parse(args);
-		        result.Add(item);
-	        }
-	        catch (ApplicationException x)
-	        {
-		        MessageBox.Show(x.Message, Title);
-	        }
-
-	        return result;
+            return EditItem.PrepareEditList(args);
         }
 
         private static void ProcessActions(IEnumerable<EditItem> EditItemList)
         {
             foreach (var edit in EditItemList)
             {
-	            string msg = $"I pretend to process this: {edit}";
-	            MessageBox.Show(msg, Title);
-                edit.Execute();
+                if (!edit.Execute())
+                    MessageBox.Show($"Execution problem with edit ({edit})");
             }
         }
     }
