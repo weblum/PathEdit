@@ -159,8 +159,44 @@ namespace PathEdit
 
 			ReadCurrentValues();
 		}
+        private void OnMoveClick(object sender, RoutedEventArgs e)
+        {
+            int index = ListBox.SelectedIndex;
 
-		private void OnSaveClick(object sender, RoutedEventArgs e)
+            if (index < 0)
+            {
+                MessageBox.Show("You must select an item to move",
+                    "Selection Error", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            string ItemToMove = data[index];
+            data.RemoveAt(index);
+            try
+            {
+                Save();
+                OnSwitchClick(sender, e);
+                data.Add(ItemToMove);
+
+                StatusText.Text = "Entry moved";
+                timer.Start();
+                /*
+				MessageBox.Show("The operation completed successfully.",
+								"Good News",
+								MessageBoxButton.OK,
+								MessageBoxImage.Information);
+				 */
+            }
+            catch (Exception x)
+            {
+                MessageBox.Show(x.Message, Caption,
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+        private void OnSaveClick(object sender, RoutedEventArgs e)
 		{
 			try
 			{

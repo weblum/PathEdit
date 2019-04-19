@@ -33,13 +33,14 @@
 			<Button Content="Delete" x:Name="DeleteButton" Click="OnDeleteClick"/>
 			<Button Content="Move Up" x:Name="MoveUpButton" Click="OnMoveUpClick"/>
 			<Button Content="Move Down" x:Name="MoveDownButton" Click="OnMoveDownClick"/>
-			<Button Content="Switch Hive" Margin="0 20 0 4" x:Name="SwitchButton" Click="OnSwitchClick"/>
-			<Button Content="Save" Click="OnSaveClick"/>
-			<Button Content="Cancel" Click="OnCancelClick"/>
-		</StackPanel>
+            <Button Content="Switch Hive" Margin="0 20 0 4" x:Name="SwitchButton" Click="OnSwitchClick"/>
+            <Button Content="Move" Click="OnMoveClick"/>
+            <Button Content="Save" Click="OnSaveClick"/>
+            <Button Content="Cancel" Click="OnCancelClick"/>
+        </StackPanel>
 		<StatusBar x:Name="sBar" Grid.Row="1" Background="White">
             <StatusBarItem>
-                <TextBlock Name="StatusText" Foreground="Blue" Text="© 2015 WEBlum" />
+                <TextBlock Name="StatusText" Foreground="Blue" Text="© 2015-2019 WEBlum" />
             </StatusBarItem>
         </StatusBar>
 	</Grid>
