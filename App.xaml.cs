@@ -7,56 +7,30 @@
 // Copyright (C) 2019 William E. Blum.  All rights reserved.
 //---------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Windows;
-using System.IO;
 
 namespace PathEdit
 {
-	public partial class App //  : Application
-	{
+    public partial class App //  : Application
+    {
         #region Overrides of Application
-		protected override void OnStartup(StartupEventArgs e)
-		{
-			if (e.Args.Length > 0)
-				DoCommandsAndExit(e);
-			else
-				new MainWindow().Show();
-			base.OnStartup(e);
-		}
-		#endregion
 
-		private void DoCommandsAndExit(StartupEventArgs e)
-		{
-			List<EditItem> EditItemList;
-			if (e.Args.Length == 1 && File.Exists(e.Args[0]))
-				EditItemList = ProcessScriptFile(e.Args[0]);
-			else
-				EditItemList = ProcessCommandLine(e.Args);
-            if (EditItemList!=null)
-    			ProcessActions(EditItemList);
-
-			Shutdown();
-		}
-
-		private static List<EditItem> ProcessScriptFile(string FileName)
+        protected override void OnStartup(StartupEventArgs e)
         {
-            string[] lines = File.ReadAllLines(FileName);
-            return EditItem.PrepareEditList(lines);
+            if (e.Args.Length > 0)
+                DoCommandsAndExit(e);
+            else
+                new MainWindow().Show();
+            base.OnStartup(e);
         }
 
-        private static List<EditItem> ProcessCommandLine(string[] args)
-        {
-            return EditItem.PrepareEditList(args);
-        }
+        #endregion
 
-        private static void ProcessActions(IEnumerable<EditItem> EditItemList)
+        private void DoCommandsAndExit(StartupEventArgs e)
         {
-            foreach (var edit in EditItemList)
-            {
-                if (!edit.Execute())
-                    MessageBox.Show($"Execution problem with edit ({edit})");
-            }
+            Script script = new Script(e.Args);
+            script.Execute();
+            Shutdown();
         }
     }
 }
