@@ -2,7 +2,7 @@
 
 namespace PathEdit
 {
-    public class EditItem
+    public sealed class EditItem
     {
         public enum Action
         {
@@ -16,7 +16,47 @@ namespace PathEdit
             End
         }
 
-        private const string Title = "Path Editor";
+        #region Equality members
+
+        private bool Equals(EditItem other)
+        {
+	        return string.Equals(pathString, other.pathString) && action == other.action && hive == other.hive && location == other.location;
+        }
+
+        public override bool Equals(object obj)
+        {
+	        if (ReferenceEquals(null, obj))
+		        return false;
+	        if (ReferenceEquals(this, obj))
+		        return true;
+	        if (obj.GetType() != GetType())
+		        return false;
+	        return Equals((EditItem) obj);
+        }
+
+        public override int GetHashCode()
+        {
+	        unchecked
+	        {
+		        int hashCode = (pathString != null ? pathString.GetHashCode() : 0);
+		        hashCode = (hashCode * 397) ^ (int) action;
+		        hashCode = (hashCode * 397) ^ (int) hive;
+		        hashCode = (hashCode * 397) ^ (int) location;
+		        return hashCode;
+	        }
+        }
+
+        public static bool operator ==(EditItem left, EditItem right)
+        {
+	        return Equals(left, right);
+        }
+
+        public static bool operator !=(EditItem left, EditItem right)
+        {
+	        return !Equals(left, right);
+        }
+
+        #endregion
 
         private string pathString { get; }
         private Action action { get; }
