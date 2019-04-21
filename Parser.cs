@@ -7,17 +7,17 @@
 // Copyright (C) 2019 William E. Blum.  All rights reserved.
 //---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace PathEdit
 {
-	internal class Parser
+	public class Parser
 	{
 		private const string Title = "Path Editor";
 		List<EditItem> EditItemList = new List<EditItem>();
 
-		public IEnumerable<EditItem> Parse(string[] tokens)
+		public IEnumerable<EditItem> Parse(IEnumerable<string> tokens)
 		{
 			//defaults
 			EditItem.Location location = EditItem.Location.Beginning;
@@ -47,23 +47,14 @@ namespace PathEdit
 							else if (parm.ToUpper().StartsWith("S"))
 								hive = Hive.System;
 							else
-							{
-								MessageBox.Show($"Bad token: {token}", Title);
-								return new List<EditItem>();
-							}
+								throw new Exception($"Bad token: {token}");
 						}
 					}
 					else
-					{
-						MessageBox.Show($"Bad token: {token}", Title);
-						return new List<EditItem>();
-					}
+						throw new Exception($"Bad token: {token}");
 				}
 				else
-				{
-					MessageBox.Show($"Bad token: {token}", Title);
-					return new List<EditItem>();
-				}
+					throw new Exception($"Bad token: {token}");
 			}
 			return EditItemList;
 		}

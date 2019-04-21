@@ -7,6 +7,7 @@
 // Copyright (C) 2019 William E. Blum.  All rights reserved.
 //---------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -14,6 +15,8 @@ namespace PathEdit
 {
 	public partial class App //  : Application
 	{
+		private const string Title = "Path Editor";
+
 		#region Overrides of Application
 
 		protected override void OnStartup(StartupEventArgs e)
@@ -29,10 +32,17 @@ namespace PathEdit
 
 		private void DoCommandsAndExit(StartupEventArgs e)
 		{
-			var parser = new Parser();
-			IEnumerable<EditItem> commands = parser.Parse(e.Args);
-			var script = new Script();
-			script.Execute(commands);
+			try
+			{
+				var parser = new Parser();
+				IEnumerable<EditItem> commands = parser.Parse(e.Args);
+				var script = new Script();
+				script.Execute(commands);
+			}
+			catch (Exception x)
+			{
+				MessageBox.Show(x.Message, Title);
+			}
 			Shutdown();
 		}
 	}
