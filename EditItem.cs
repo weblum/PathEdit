@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace PathEdit
 {
@@ -73,7 +74,7 @@ namespace PathEdit
             string check = StripTrailingSlash(pathString);
             for (int i = 0; i < data.Count; i++)
             {
-                if (StripTrailingSlash(data[i]) == check)
+                if (PathEqual(check,data[i]))
                 {
                     data.RemoveAt(i);
                     return;
@@ -83,9 +84,23 @@ namespace PathEdit
 
         static string StripTrailingSlash(string inp)
         {
-            if (inp.EndsWith(@"\"))
-                return inp.Substring(0, inp.Length - 1);
-            return inp;
+            return inp.EndsWith(@"\") ? inp.Substring(0, inp.Length - 1) : inp;
+        }
+
+        private static bool PathEqual(string candidate, string target)
+        {
+            bool aNull = string.IsNullOrWhiteSpace(candidate);
+            bool bNull = string.IsNullOrWhiteSpace(target);
+
+            /*if (aNull && bNull) return true; */
+
+            if (aNull || bNull)
+                return false;
+
+            string a = StripTrailingSlash(candidate);
+            string b = StripTrailingSlash(target);
+            return string.Equals(a, b,
+                StringComparison.InvariantCultureIgnoreCase);
         }
 
         #region Overrides of Object
