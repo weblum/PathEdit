@@ -24,6 +24,10 @@ namespace PathEdit
                 SuccessfulParse = ParseCommandLine(args);
         }
 
+        public Script()
+        {
+        }
+
         private bool ParseScriptFile(string FileName)
         {
             string[] lines = File.ReadAllLines(FileName);
@@ -120,7 +124,14 @@ namespace PathEdit
             ProcessHive(Hive.System);
         }
 
-        public void ProcessHive(Hive hive)   // IEnumerable<EditItem> EditItemList)
+        public void Execute(IEnumerable<EditItem> items)
+        {
+	        EditItemList = items.ToList();
+	        ProcessHive(Hive.User);
+	        ProcessHive(Hive.System);
+        }
+
+		public void ProcessHive(Hive hive)   // IEnumerable<EditItem> EditItemList)
         {
             ObservableCollection<string> data = ReadHive(hive);
             foreach (var edit in EditItemList)

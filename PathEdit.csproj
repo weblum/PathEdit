@@ -64,6 +64,7 @@
     <Compile Include="DirectoryBrowser.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Hive.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="RegistryEditor.cs" />
     <Compile Include="Script.cs" />
     <Compile Include="StringEditor.xaml.cs">
