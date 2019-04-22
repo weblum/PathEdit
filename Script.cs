@@ -9,6 +9,12 @@ namespace PathEdit
     {
         private const string Title = "Path Editor";
         private List<EditItem> editItemList = new List<EditItem>();
+        private readonly IRegistryEditor editor;
+
+        public Script(IRegistryEditor editor)
+        {
+            this.editor = editor;
+        }
 
         public void Execute(IEnumerable<EditItem> items)
         {
@@ -29,11 +35,10 @@ namespace PathEdit
 
         }
 
-        private static IEnumerable<string> ReadHive(Hive hive)
+        private IEnumerable<string> ReadHive(Hive hive)
         {
             try
             {
-                var editor = new RegistryEditor();
                 return editor.GetPathStrings(hive);
             }
             catch (Exception e)
@@ -44,11 +49,10 @@ namespace PathEdit
             return null;
         }
 
-        private static void SaveHive(Hive hive, IEnumerable<string> data)
+        private void SaveHive(Hive hive, IEnumerable<string> data)
         {
             try
             {
-                var editor = new RegistryEditor();
                 editor.SetPathStrings(hive, data);
             }
             catch (Exception e)
