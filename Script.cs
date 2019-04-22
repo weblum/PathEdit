@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
@@ -9,7 +8,7 @@ namespace PathEdit
     public class Script
     {
         private const string Title = "Path Editor";
-        List<EditItem> editItemList=new List<EditItem>();
+        private List<EditItem> editItemList = new List<EditItem>();
 
         public void Execute(IEnumerable<EditItem> items)
         {
@@ -20,17 +19,17 @@ namespace PathEdit
 
         private void ProcessHive(Hive hive)
         {
-            ObservableCollection<string> data = ReadHive(hive);
+            var data = ReadHive(hive).ToList();
             foreach (var edit in editItemList)
             {
-                if (!edit.Execute(hive,data))
+                if (!edit.Execute(hive, data))
                     MessageBox.Show($"Execution problem with edit ({edit})");
             }
-            SaveHive(hive,data);
+            SaveHive(hive, data);
 
         }
 
-        private static ObservableCollection<string> ReadHive(Hive hive)
+        private static IEnumerable<string> ReadHive(Hive hive)
         {
             try
             {
@@ -45,7 +44,7 @@ namespace PathEdit
             return null;
         }
 
-        private static void SaveHive(Hive hive, ObservableCollection<string> data)
+        private static void SaveHive(Hive hive, IEnumerable<string> data)
         {
             try
             {

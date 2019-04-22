@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
@@ -19,7 +18,7 @@ namespace PathEdit
 		private delegate RegistryKey EnvironmentKey(bool writable);
 		private const string Path = "PATH";
 
-		public ObservableCollection<string> GetPathStrings(Hive hive)
+		public IEnumerable<string> GetPathStrings(Hive hive)
 		{
 			EnvironmentKey access = Access(hive);
 
@@ -28,11 +27,11 @@ namespace PathEdit
 				if (environment == null)
 					throw new Error("Failed to open registry key");
 
-				object result = environment.GetValue(Path) 
+				object values = environment.GetValue(Path) 
 					?? "No PATH variable";
 
-				var strings = result.ToString().Split(';');
-				return new ObservableCollection<string>(strings);
+				IEnumerable<string> result = values.ToString().Split(';');
+				return result;
 			}
 		}
 

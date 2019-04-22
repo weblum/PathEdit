@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace PathEdit
@@ -78,7 +79,7 @@ namespace PathEdit
             action = act;
         }
 
-        public bool Execute(Hive hive,ObservableCollection<string> data)
+        public bool Execute(Hive hive, IList<string> data)
         {
             switch (action)
             {
@@ -91,7 +92,7 @@ namespace PathEdit
             return false;
         }
 
-        private bool ExecuteAdd(Hive hiv,ObservableCollection<string> data)
+        private bool ExecuteAdd(Hive hiv, IList<string> data)
         {
             if (hive != hiv)
                 return true;
@@ -109,7 +110,7 @@ namespace PathEdit
             }
         }
 
-        private void ExecuteDelete(ObservableCollection<string> data)
+        private void ExecuteDelete(IList<string> data)
         {
             string check = StripTrailingSlash(pathString);
             for (int i = 0; i < data.Count; i++)

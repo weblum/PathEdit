@@ -248,8 +248,7 @@ namespace PathEdit
 
 			try
 			{
-				var editor = new RegistryEditor();
-				data = editor.GetPathStrings(hive);
+                data = ReadRegistry(hive);
 				cleanData = CloneData(data);
 
 				if (data.Count == 0)
@@ -263,6 +262,14 @@ namespace PathEdit
 				                MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
+
+        private static ObservableCollection<string> ReadRegistry(Hive currentHive)
+        {
+            var editor = new RegistryEditor();
+            IEnumerable<string> paths = editor.GetPathStrings(currentHive);
+            var result = new ObservableCollection<string>(paths);
+            return result;
+        }
 
 		private bool UserDeclinesToAbandon()
 		{
