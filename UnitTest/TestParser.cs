@@ -32,8 +32,14 @@ namespace UnitTest
 			IEnumerable<EditItem> enumerable = sut.Parse(items);
 			var actual = enumerable.First();
 
-			// Assert
-			var expected = new EditItem(item, EditItem.Action.Add);
+            // Assert
+            // The defaults returned from the parser are not necessarily the
+            // default values of the EditItem. Here are the defaults we
+            // expect from the Parser:
+            const EditItem.Location DefaultLocation = EditItem.Location.Beginning;
+            const Hive DefaultHive = Hive.User;
+
+            var expected = new EditItem(item, EditItem.Action.Add, DefaultHive, DefaultLocation);
 
 			Assert.That(actual, Is.EqualTo(expected));
 		}
