@@ -119,6 +119,34 @@ namespace UnitTest
 		}
 
         [Test]
+        public void Parse_MissingOpenBracked_Throws()
+        {
+            Parser sut = new Parser();
+
+            string[] items =
+            {
+                "e,s]"
+            };
+
+            // Act
+            Assert.Throws<Exception>(() => sut.Parse(items));
+        }
+
+        [Test]
+        public void Parse_MissingCloseBracked_Throws()
+        {
+            Parser sut = new Parser();
+
+            string[] items =
+            {
+                "[e,s"
+            };
+
+            // Act
+            Assert.Throws<Exception>(() => sut.Parse(items));
+        }
+
+        [Test]
         public void Parse_SpaceInToken_Throws()
         {
             // I am not sure why a space in the token is required to throw an
