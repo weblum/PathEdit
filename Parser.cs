@@ -124,6 +124,13 @@ namespace PathEdit
 			public EditItem.Location? LocationParm { get; private set; }
 			public bool IsParm { get; }
 
+			// The regular expression either fails or extracts one or two
+			// characters. On success, the method always parses the first
+			// character. The first character might be for a hive or for a
+			// location. If there are two characters, and the first was for a
+			// location, you parse the second character as a hive; but if the
+			// first was for a hive, you parse the second character as a
+			// location.
 			public ParmParser(string trimmed)
 			{
 				Match m = Rex.Match(trimmed);
