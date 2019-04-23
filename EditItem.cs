@@ -88,8 +88,9 @@ namespace PathEdit
 				case Action.Delete:
 					ExecuteDelete(data);
 					return true;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
-			return false;
 		}
 
 		private bool ExecuteAdd(Hive hiv, IList<string> data)
@@ -105,7 +106,7 @@ namespace PathEdit
 					data.Add(pathString);
 					return true;
 				default:
-					return false;
+					throw new ArgumentOutOfRangeException();
 
 			}
 		}
