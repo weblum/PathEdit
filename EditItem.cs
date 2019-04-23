@@ -124,8 +124,11 @@ namespace PathEdit
 			}
 		}
 
-		static string StripTrailingSlash(string inp)
+		private static string StripTrailingSlash(string inp)
 		{
+			if (inp == null)
+				return null;
+
 			return inp.EndsWith(@"\") ? inp.Substring(0, inp.Length - 1) : inp;
 		}
 

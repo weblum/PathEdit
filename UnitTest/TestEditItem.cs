@@ -32,6 +32,9 @@ namespace UnitTest
 		[Test]
 		public void Execute_Delete_DeletesFromUser()
 		{
+			// Verify that the SUT deletes the requested item from somewhere
+			// in the middle of the User hive.
+
 			// Arrange
 			EditItem sut = new EditItem(ToDelete, EditItem.Action.Delete);
 
@@ -46,6 +49,9 @@ namespace UnitTest
 		[Test]
 		public void Execute_Delete_DeletesFromSystem()
 		{
+			// Verify that the SUT deletes the requested item from somewhere
+			// in the middle of the System hive.
+
 			// Arrange
 			EditItem sut = new EditItem(ToDelete, EditItem.Action.Delete);
 
@@ -55,6 +61,38 @@ namespace UnitTest
 			// Assert
 			string[] expected = {Original[0], Original[2], Original[3]};
 			CollectionAssert.AreEqual(expected, pathList);
+		}
+
+		[Test]
+		public void Execute_DeleteNullPath_DeletesNothing()
+		{
+			// Verify that a null entry in a hive is not deleted.
+
+			// Arrange
+			EditItem sut = new EditItem(ToDelete, EditItem.Action.Delete);
+
+			// Act
+			pathList[1] = null;
+			sut.Execute(Hive.System, pathList);
+
+			// Assert
+			string[] expected = { Original[0], null, Original[2], Original[3] };
+			CollectionAssert.AreEqual(expected, pathList);
+		}
+
+		[Test]
+		public void Execute_DeleteNullItem_DeletesNothing()
+		{
+			// Verify that a command to delete a null entry in a hive deletes nothing.
+
+			// Arrange
+			EditItem sut = new EditItem(path: null, EditItem.Action.Delete);
+
+			// Act
+			sut.Execute(Hive.System, pathList);
+
+			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
 		}
 
 		[Test]
