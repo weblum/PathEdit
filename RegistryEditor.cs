@@ -14,49 +14,49 @@ using Microsoft.Win32;
 namespace PathEdit
 {
 	public class RegistryEditor : IRegistryEditor
-    {
+	{
 		private delegate RegistryKey EnvironmentKey(bool writable);
 		private const string Path = "PATH";
 
-        #region Implementation of IRegistryEditor interface
+		#region Implementation of IRegistryEditor interface
 
-        public IEnumerable<string> GetPathStrings(Hive hive)
-        {
-            EnvironmentKey access = Access(hive);
+		public IEnumerable<string> GetPathStrings(Hive hive)
+		{
+			EnvironmentKey access = Access(hive);
 
-            using (var environment = access(writable:false))
-            {
-                if (environment == null)
-                    throw new Error("Failed to open registry key");
+			using (var environment = access(writable:false))
+			{
+				if (environment == null)
+					throw new Error("Failed to open registry key");
 
-                object values = environment.GetValue(Path) 
-                                ?? "No PATH variable";
+				object values = environment.GetValue(Path) 
+								?? "No PATH variable";
 
-                IEnumerable<string> result = values.ToString().Split(';');
-                return result;
-            }
-        }
+				IEnumerable<string> result = values.ToString().Split(';');
+				return result;
+			}
+		}
 
-        public void SetPathStrings(Hive hive, IEnumerable<string> strings)
-        {
-            string value = string.Join(";", strings);
+		public void SetPathStrings(Hive hive, IEnumerable<string> strings)
+		{
+			string value = string.Join(";", strings);
 
-            EnvironmentKey access = Access(hive);
+			EnvironmentKey access = Access(hive);
 
-            using (var environment = access(writable: true))
-            {
-                if (environment == null) 
-                    throw new Error("Failed to open registry key");
-                environment.SetValue(Path, value);
-                NotifySettingsChange();
-            }
-        }
+			using (var environment = access(writable: true))
+			{
+				if (environment == null) 
+					throw new Error("Failed to open registry key");
+				environment.SetValue(Path, value);
+				NotifySettingsChange();
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Private Utility Methods
+		#region Private Utility Methods
 
-        private static EnvironmentKey Access(Hive hive)
+		private static EnvironmentKey Access(Hive hive)
 		{
 			switch (hive)
 			{
@@ -124,15 +124,15 @@ namespace PathEdit
 			uint timeout, 
 			out uint result);
 
-        #endregion
-    }
+		#endregion
+	}
 }
 
 #if false
 See https://support.microsoft.com/en-us/kb/104011
 
 SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
-    (LPARAM) "Environment", SMTO_ABORTIFHUNG,
-    5000, &dwReturnValue);
+	(LPARAM) "Environment", SMTO_ABORTIFHUNG,
+	5000, &dwReturnValue);
 
 #endif

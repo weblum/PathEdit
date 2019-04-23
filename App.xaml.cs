@@ -36,7 +36,7 @@ namespace PathEdit
 			{
 				var parser = new Parser();
 				IEnumerable<EditItem> commands = parser.Parse(e.Args);
-                IRegistryEditor editor = new RegistryEditor();
+				IRegistryEditor editor = new RegistryEditor();
 				var script = new Script(editor);
 				script.Execute(commands);
 			}
