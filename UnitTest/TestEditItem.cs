@@ -1,87 +1,182 @@
-﻿// ---------------------------------------------------------------------------
-//  (c) Copyright 2019 Carl Zeiss Meditec, Inc.  All rights reserved.
-//  THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF CZM, INC.
-//  The copyright notice does not evidence any actual or intended publication.
-// ---------------------------------------------------------------------------
-
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
+using PathEdit;
 
 namespace UnitTest
 {
 	[TestFixture]
 	public class TestEditItem
 	{
+		// This is the original list of paths at the beginning of each test.
+		private static readonly string[] Original = {"The", "Rain", "In", "Spain"};
+
+		// This is the modifiable list constructed at the beginning of each
+		// test.
+		private List<string> pathList;
+
+		// This is the new path that is supposed to be added by each test.
+		private const string TestPath = "TestPath";
+
+		[SetUp]
+		public void MakePathList()
+		{
+			// Our setup consists of being sure the modifiable list of paths
+			// starts out the same at the beginning of each test.
+			pathList = new List<string>(Original);
+		}
 
 		[Test]
 		public void Execute_AddUserBegin_AddsToUser()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT adds the path to the beginning of the User
+			// hive and does not remove or change the order of what was
+			// there.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add, 
+				Hive.User, EditItem.Location.Beginning);
+
 			// Act
+			sut.Execute(Hive.User, pathList);
+
 			// Assert
+			string first = pathList.First();
+			Assert.That(first, Is.EqualTo(TestPath));
+			IEnumerable<string> theRest = pathList.Skip(1);
+			CollectionAssert.AreEqual(Original, theRest);
 		}
 
 		[Test]
 		public void Execute_AddUserBegin_NoAddToSystem()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT does not molest the hive it is supposed to
+			// leave alone.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.User, EditItem.Location.Beginning);
+
 			// Act
+			sut.Execute(Hive.System, pathList);
+
 			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
 		}
 
 		[Test]
 		public void Execute_AddUserEnd_AddsToUser()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT adds the path to the end of the User hive
+			// and does not remove or change the order of what was there.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.User, EditItem.Location.End);
+
 			// Act
+			sut.Execute(Hive.User, pathList);
+
 			// Assert
+			string last = pathList.Last();
+			Assert.That(last, Is.EqualTo(TestPath));
+			int allButLast = pathList.Count - 1;
+			IEnumerable<string> theRest = pathList.Take(allButLast);
+			CollectionAssert.AreEqual(Original, theRest);
 		}
 
 		[Test]
 		public void Execute_AddUserEnd_NoAddToSystem()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT does not molest the hive it is supposed to
+			// leave alone.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.User, EditItem.Location.End);
+
 			// Act
+			sut.Execute(Hive.System, pathList);
+
 			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
 		}
 
 		[Test]
 		public void Execute_AddSystemBegin_AddsToSystem()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT adds the path to the beginning of the
+			// System hive and does not remove or change the order of what
+			// was there.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.System, EditItem.Location.Beginning);
+
 			// Act
+			sut.Execute(Hive.System, pathList);
+
 			// Assert
+			string first = pathList.First();
+			Assert.That(first, Is.EqualTo(TestPath));
+			IEnumerable<string> theRest = pathList.Skip(1);
+			CollectionAssert.AreEqual(Original, theRest);
 		}
 
 		[Test]
 		public void Execute_AddSystemBegin_NoAddToUser()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT does not molest the hive it is supposed to
+			// leave alone.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.System, EditItem.Location.Beginning);
+
 			// Act
+			sut.Execute(Hive.User, pathList);
+
 			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
 		}
 
 		[Test]
 		public void Execute_AddSystemEnd_AddsToSystem()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT adds the path to the end of the System
+			// hive and does not remove or change the order of what was
+			// there.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.System, EditItem.Location.End);
+
 			// Act
+			sut.Execute(Hive.System, pathList);
+
 			// Assert
+			string last = pathList.Last();
+			Assert.That(last, Is.EqualTo(TestPath));
+			int allButLast = pathList.Count - 1;
+			IEnumerable<string> theRest = pathList.Take(allButLast);
+			CollectionAssert.AreEqual(Original, theRest);
 		}
 
 		[Test]
 		public void Execute_AddSystemEnd_NoAddToUser()
 		{
-			Assert.Inconclusive();
+			// Verify that the SUT does not molest the hive it is supposed to
+			// leave alone.
+
 			// Arrange
+			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
+				Hive.System, EditItem.Location.End);
+
 			// Act
+			sut.Execute(Hive.User, pathList);
+
 			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
 		}
 	}
 }
