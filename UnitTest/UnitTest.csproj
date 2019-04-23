@@ -38,6 +38,7 @@
       <HintPath>..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,9 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FakeRegistryEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestEditItem.cs" />
     <Compile Include="TestParser.cs" />
+    <Compile Include="TestScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PathEdit.csproj">

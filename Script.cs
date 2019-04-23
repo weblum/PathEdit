@@ -1,15 +1,22 @@
-﻿using System;
+﻿//---------------------------------------------------------------------------
+// FILE NAME: Script.cs
+// GREETING:  Happy Earth Day
+// DATE:      Monday, April 22, 2019   10 pm
+// WEATHER:   Fair, Temp 62°F, Pressure 30.01",
+//            Humidity 65%, Wind 3.5 mph from the East
+// Programmer's Cuvee XLV
+// Copyright (C) 2019 William E. Blum.  All rights reserved.
+//---------------------------------------------------------------------------
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 
 namespace PathEdit
 {
 	public class Script
 	{
-		private const string Title = "Path Editor";
-		private List<EditItem> editItemList = new List<EditItem>();
 		private readonly IRegistryEditor editor;
+		private List<EditItem> editItemList = new List<EditItem>();
 
 		public Script(IRegistryEditor editor)
 		{
@@ -25,41 +32,12 @@ namespace PathEdit
 
 		private void ProcessHive(Hive hive)
 		{
-			var data = ReadHive(hive).ToList();
-			foreach (var edit in editItemList)
-			{
-				if (!edit.Execute(hive, data))
-					MessageBox.Show($"Execution problem with edit ({edit})");
-			}
-			SaveHive(hive, data);
+			var data = editor.GetPathStrings(hive).ToList();
 
-		}
+			foreach (EditItem edit in editItemList)
+				edit.Execute(hive, data);
 
-		private IEnumerable<string> ReadHive(Hive hive)
-		{
-			try
-			{
-				return editor.GetPathStrings(hive);
-			}
-			catch (Exception e)
-			{
-				MessageBox.Show(e.Message, Title,
-					MessageBoxButton.OK, MessageBoxImage.Warning);
-			}
-			return null;
-		}
-
-		private void SaveHive(Hive hive, IEnumerable<string> data)
-		{
-			try
-			{
-				editor.SetPathStrings(hive, data);
-			}
-			catch (Exception e)
-			{
-				MessageBox.Show(e.Message, Title,
-					MessageBoxButton.OK, MessageBoxImage.Warning);
-			}
+			editor.SetPathStrings(hive, data);
 		}
 	}
 }
