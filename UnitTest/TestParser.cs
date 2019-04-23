@@ -48,11 +48,6 @@ namespace UnitTest
 		[Test]
 		public void Parse_DeleteItem_CreatesDefaultDelete()
 		{
-			// This test has an unexpected outcome, but it is explained when you know
-			// that the EditItem is defective in the case of a deletion. Namely, the
-			// hive and location are indeterminate and unused in the update algorithm.
-			// Hence, they should be ignored if one is not to be confused.
-
 			// Arrange
 			Parser sut = new Parser();
 			const string Item = "TestItem";
@@ -69,10 +64,9 @@ namespace UnitTest
 			// Assert
 			// The defaults returned from the parser are not necessarily the
 			// default values of the EditItem. Here are the defaults we
-			// expect from the Parser, which are inexplicably different
-			// depending on whether we are adding or deleting:
+			// expect from the Parser:
 			const EditItem.Location DefaultLocation = EditItem.Location.Beginning;
-			const Hive DefaultHive = Hive.System;
+			const Hive DefaultHive = Hive.User;
 
 			var expected = new EditItem(Item, EditItem.Action.Delete, DefaultHive, DefaultLocation);
 
@@ -94,8 +88,8 @@ namespace UnitTest
 		[TestCase("s,e", Hive.System, EditItem.Location.End)]
 		[TestCase("e,s", Hive.System, EditItem.Location.End)]
 
-		[TestCase("sierra,echo", Hive.System, EditItem.Location.End)]
-		[TestCase("echo,sierra", Hive.System, EditItem.Location.End)]
+		[TestCase("SIERRA,ECHO", Hive.System, EditItem.Location.End)]
+		[TestCase("ECHO,SIERRA", Hive.System, EditItem.Location.End)]
 		public void Parse_SpecifyHiveLoc_CreatesCorrespondingAdd(string tok, Hive hive, EditItem.Location loc)
 		{
 			// Arrange
@@ -128,7 +122,7 @@ namespace UnitTest
 				"e,s]"
 			};
 
-			// Act
+			// Act and Assert
 			Assert.Throws<Exception>(() => sut.Parse(items));
 		}
 
@@ -142,7 +136,7 @@ namespace UnitTest
 				"[e,s"
 			};
 
-			// Act
+			// Act and Assert
 			Assert.Throws<Exception>(() => sut.Parse(items));
 		}
 
@@ -159,7 +153,42 @@ namespace UnitTest
 				"[e, s]"
 			};
 
-			// Act
+			// Act and Assert
+			Assert.Throws<Exception>(() => sut.Parse(items));
+		}
+
+		[Test]
+		public void Parse_DuplicateParms_Throws()
+		{
+			// You should not be able to pass the same parameter twice. If
+			// you do, it is probably an error that you should be told about.
+
+			// Arrange
+			Parser sut = new Parser();
+
+			string[] items =
+			{
+				"[e,e]"
+			};
+
+			// Act and Assert
+			Assert.Throws<Exception>(() => sut.Parse(items));
+		}
+
+		[Test]
+		public void Parse_UnknownParm_Throws()
+		{
+			// Obviously, you should not be allowed to enter unsupported parameters.
+
+			// Arrange
+			Parser sut = new Parser();
+
+			string[] items =
+			{
+				"[k]"
+			};
+
+			// Act and Assert
 			Assert.Throws<Exception>(() => sut.Parse(items));
 		}
 	}

@@ -9,6 +9,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Windows.Automation.Peers;
 
 namespace PathEdit
 {
@@ -54,37 +56,154 @@ namespace PathEdit
 			char[] charsToTrim = { '\'', '\"' };
 			foreach (var token in tokens)
 			{
-				string toke = token.Trim(charsToTrim);
-				if (toke.StartsWith("+"))  //Add
-					editItemList.Add(new EditItem(toke.Substring(1), EditItem.Action.Add, hive, location));
-				else if (toke.StartsWith("-")) //Delete
-					editItemList.Add(new EditItem(toke.Substring(1), EditItem.Action.Delete));
-				else if (toke.StartsWith("[")) //parameter
+				string trimmed = token.Trim(charsToTrim);
+				PathParser pathParser = new PathParser(trimmed);
+				ParmParser parmParser = new ParmParser(trimmed);
+
+				if (pathParser.IsPath)
 				{
-					if (toke.EndsWith("]"))
-					{
-						string[] parms = toke.Substring(1, toke.Length - 2).Split(',');
-						foreach (var parm in parms)
-						{
-							if (parm.ToUpper().StartsWith("B"))
-								location = EditItem.Location.Beginning;
-							else if (parm.ToUpper().StartsWith("E"))
-								location = EditItem.Location.End;
-							else if (parm.ToUpper().StartsWith("U"))
-								hive = Hive.User;
-							else if (parm.ToUpper().StartsWith("S"))
-								hive = Hive.System;
-							else
-								throw new Exception($"Bad token: {token}");
-						}
-					}
-					else
-						throw new Exception($"Bad token: {token}");
+					var item = new EditItem(pathParser.Path, pathParser.Action, hive, location);
+					editItemList.Add(item);
+				}
+				else if (parmParser.IsParm)
+				{
+					if (parmParser.HiveParm.HasValue)
+						hive = parmParser.HiveParm.Value;
+					if (parmParser.LocationParm.HasValue)
+						location = parmParser.LocationParm.Value;
 				}
 				else
-					throw new Exception($"Bad token: {token}");
+					throw new Exception($"Bad parameter: {token}");
 			}
 			return editItemList;
+		}
+
+		private class PathParser
+		{
+			private const int ActionIndex = 1;
+			private const int PathIndex = 2;
+			private const string Pattern = @"(\+|-)(\S+)";
+			private const string BadAction = "Bad action";
+			private static readonly Regex Rex = new Regex(Pattern);
+
+			public string Path { get; }
+			public EditItem.Action Action { get; }
+			public bool IsPath { get; }
+
+			public PathParser(string trimmed)
+			{
+				Match m = Rex.Match(trimmed);
+				IsPath = m.Success;
+
+				if (!IsPath)
+					return;
+
+				Path = m.Groups[PathIndex].Value;
+				switch (m.Groups[ActionIndex].Value)
+				{
+					case "+":
+						Action = EditItem.Action.Add;
+						break;
+					case "-":
+						Action = EditItem.Action.Delete;
+						break;
+					default:
+						throw new Exception(BadAction);
+				}
+			}
+		}
+
+		private class ParmParser
+		{
+			private const int FirstIndex = 2;
+			private const int SecondIndex = 4;
+			private const string Pattern = @"\s*\[(([beus])[a-z]*)(,([beus])[a-z]*)?]\s*";
+			private static readonly Regex Rex = new Regex(Pattern, RegexOptions.IgnoreCase);
+
+			public Hive? HiveParm { get; private set; }
+			public EditItem.Location? LocationParm { get; private set; }
+			public bool IsParm { get; }
+
+			public ParmParser(string trimmed)
+			{
+				Match m = Rex.Match(trimmed);
+				IsParm = m.Success;
+
+				if (!IsParm)
+					return;
+
+				string firstChar = m.Groups[FirstIndex].Value.ToLower();
+				string secondChar = m.Groups[SecondIndex].Value.ToLower();
+
+				bool isFirstLocation = ParseFirstChar(firstChar);
+
+				if (secondChar.Length == 0)
+					return;
+
+				if (isFirstLocation)
+					ParseSecondAsHive(secondChar);
+				else
+					ParseSecondAsLocation(secondChar);
+			}
+
+			private bool ParseFirstChar(string firstChar)
+			{
+				bool result;
+
+				switch (firstChar)
+				{
+					case "b":
+						LocationParm = EditItem.Location.Beginning;
+						result = true;
+						break;
+					case "e":
+						LocationParm = EditItem.Location.End;
+						result = true;
+						break;
+					case "u":
+						HiveParm = Hive.User;
+						result = false;
+						break;
+					case "s":
+						HiveParm = Hive.System;
+						result = false;
+						break;
+					default:
+						throw new Exception("Bad parameter");
+				}
+
+				return result;
+			}
+
+			private void ParseSecondAsHive(string secondChar)
+			{
+				switch (secondChar)
+				{
+					case "u":
+						HiveParm = Hive.User;
+						break;
+					case "s":
+						HiveParm = Hive.System;
+						break;
+					default:
+						throw new Exception("Bad parameter");
+				}
+			}
+
+			private void ParseSecondAsLocation(string secondChar)
+			{
+				switch (secondChar)
+				{
+					case "b":
+						LocationParm = EditItem.Location.Beginning;
+						break;
+					case "e":
+						LocationParm = EditItem.Location.End;
+						break;
+					default:
+						throw new Exception("Bad parameter");
+				}
+			}
 		}
 	}
 }
