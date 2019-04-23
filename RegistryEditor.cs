@@ -8,18 +8,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
 namespace PathEdit
 {
-	public class RegistryEditor
+	public class RegistryEditor : IRegistryEditor
 	{
 		private delegate RegistryKey EnvironmentKey(bool writable);
 		private const string Path = "PATH";
 
-		public ObservableCollection<string> GetPathStrings(Hive hive)
+		#region Implementation of IRegistryEditor interface
+
+		public IEnumerable<string> GetPathStrings(Hive hive)
 		{
 			EnvironmentKey access = Access(hive);
 
@@ -28,11 +29,11 @@ namespace PathEdit
 				if (environment == null)
 					throw new Error("Failed to open registry key");
 
-				object result = environment.GetValue(Path) 
-					?? "No PATH variable";
+				object values = environment.GetValue(Path) 
+								?? "No PATH variable";
 
-				var strings = result.ToString().Split(';');
-				return new ObservableCollection<string>(strings);
+				IEnumerable<string> result = values.ToString().Split(';');
+				return result;
 			}
 		}
 
@@ -51,7 +52,11 @@ namespace PathEdit
 			}
 		}
 
-		private EnvironmentKey Access(Hive hive)
+		#endregion
+
+		#region Private Utility Methods
+
+		private static EnvironmentKey Access(Hive hive)
 		{
 			switch (hive)
 			{
@@ -77,7 +82,7 @@ namespace PathEdit
 			return Registry.LocalMachine.OpenSubKey(name, writable: writable);
 		}
 
-		private void NotifySettingsChange()
+		private static void NotifySettingsChange()
 		{
 			const int HWND_BROADCAST = 0xffff;
 			const int WM_SETTINGCHANGE = 0x001A;
@@ -118,6 +123,8 @@ namespace PathEdit
 			uint flags, 
 			uint timeout, 
 			out uint result);
+
+		#endregion
 	}
 }
 
@@ -125,7 +132,7 @@ namespace PathEdit
 See https://support.microsoft.com/en-us/kb/104011
 
 SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
-    (LPARAM) "Environment", SMTO_ABORTIFHUNG,
-    5000, &dwReturnValue);
+	(LPARAM) "Environment", SMTO_ABORTIFHUNG,
+	5000, &dwReturnValue);
 
 #endif

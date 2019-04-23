@@ -7,30 +7,44 @@
 // Copyright (C) 2019 William E. Blum.  All rights reserved.
 //---------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace PathEdit
 {
-    public partial class App //  : Application
-    {
-        #region Overrides of Application
+	public partial class App //  : Application
+	{
+		private const string Title = "Path Editor";
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            if (e.Args.Length > 0)
-                DoCommandsAndExit(e);
-            else
-                new MainWindow().Show();
-            base.OnStartup(e);
-        }
+		#region Overrides of Application
 
-        #endregion
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			if (e.Args.Length > 0)
+				DoCommandsAndExit(e);
+			else
+				new MainWindow().Show();
+			base.OnStartup(e);
+		}
 
-        private void DoCommandsAndExit(StartupEventArgs e)
-        {
-            Script script = new Script(e.Args);
-            script.Execute();
-            Shutdown();
-        }
-    }
+		#endregion
+
+		private void DoCommandsAndExit(StartupEventArgs e)
+		{
+			try
+			{
+				var parser = new Parser();
+				IEnumerable<EditItem> commands = parser.Parse(e.Args);
+				IRegistryEditor editor = new RegistryEditor();
+				var script = new Script(editor);
+				script.Execute(commands);
+			}
+			catch (Exception x)
+			{
+				MessageBox.Show(x.Message, Title);
+			}
+			Shutdown();
+		}
+	}
 }

@@ -9,8 +9,8 @@
 <Window x:Class="PathEdit.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		Title="Path Editor" Height="350" Width="525"
-				MinHeight="350" MinWidth="440">
+		Title="Path Editor" Height="360" Width="525"
+				MinHeight="360" MinWidth="440">
 	<Grid Margin="8">
 		<Grid.Resources>
 			<Style TargetType="Button">

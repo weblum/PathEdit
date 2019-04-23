@@ -65,8 +65,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to edit",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -90,8 +90,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to delete",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -105,8 +105,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to move up",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -126,8 +126,8 @@ namespace PathEdit
 			if (index < 0)
 			{
 				MessageBox.Show("You must select an item to move down",
-				                "Selection Error", MessageBoxButton.OK,
-				                MessageBoxImage.Warning);
+								"Selection Error", MessageBoxButton.OK,
+								MessageBoxImage.Warning);
 				return;
 			}
 
@@ -159,44 +159,44 @@ namespace PathEdit
 
 			ReadCurrentValues();
 		}
-        private void OnMoveClick(object sender, RoutedEventArgs e)
-        {
-            int index = ListBox.SelectedIndex;
+		private void OnMoveClick(object sender, RoutedEventArgs e)
+		{
+			int index = ListBox.SelectedIndex;
 
-            if (index < 0)
-            {
-                MessageBox.Show("You must select an item to move",
-                    "Selection Error", MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                return;
-            }
+			if (index < 0)
+			{
+				MessageBox.Show("You must select an item to move",
+					"Selection Error", MessageBoxButton.OK,
+					MessageBoxImage.Warning);
+				return;
+			}
 
-            string ItemToMove = data[index];
-            data.RemoveAt(index);
-            try
-            {
-                Save();
-                OnSwitchClick(sender, e);
-                data.Add(ItemToMove);
+			string ItemToMove = data[index];
+			data.RemoveAt(index);
+			try
+			{
+				Save();
+				OnSwitchClick(sender, e);
+				data.Add(ItemToMove);
 
-                StatusText.Text = "Entry moved";
-                timer.Start();
-                /*
+				StatusText.Text = "Entry moved";
+				timer.Start();
+				/*
 				MessageBox.Show("The operation completed successfully.",
 								"Good News",
 								MessageBoxButton.OK,
 								MessageBoxImage.Information);
 				 */
-            }
-            catch (Exception x)
-            {
-                MessageBox.Show(x.Message, Caption,
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
+			}
+			catch (Exception x)
+			{
+				MessageBox.Show(x.Message, Caption,
+					MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+		}
 
 
-        private void OnSaveClick(object sender, RoutedEventArgs e)
+		private void OnSaveClick(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -213,7 +213,7 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-				                MessageBoxButton.OK, MessageBoxImage.Warning);
+								MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 		}
 
@@ -227,7 +227,7 @@ namespace PathEdit
 		#region Other Event Handlers
 
 		private void ListBox_SelectionChanged(object sender,
-		                                      SelectionChangedEventArgs e)
+											  SelectionChangedEventArgs e)
 		{
 			EnableButtons();
 		}
@@ -248,8 +248,7 @@ namespace PathEdit
 
 			try
 			{
-				var editor = new RegistryEditor();
-				data = editor.GetPathStrings(hive);
+				data = ReadRegistry(hive);
 				cleanData = CloneData(data);
 
 				if (data.Count == 0)
@@ -260,8 +259,16 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-				                MessageBoxButton.OK, MessageBoxImage.Warning);
+								MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
+		}
+
+		private static ObservableCollection<string> ReadRegistry(Hive currentHive)
+		{
+			var editor = new RegistryEditor();
+			IEnumerable<string> paths = editor.GetPathStrings(currentHive);
+			var result = new ObservableCollection<string>(paths);
+			return result;
 		}
 
 		private bool UserDeclinesToAbandon()
@@ -271,8 +278,8 @@ namespace PathEdit
 
 			MessageBoxResult result =
 				MessageBox.Show("Data have changed. Save first?",
-				                Title,
-				                MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+								Title,
+								MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
 
 			switch (result)
 			{
@@ -308,7 +315,7 @@ namespace PathEdit
 			catch (Exception x)
 			{
 				MessageBox.Show(x.Message, Caption,
-				                MessageBoxButton.OK, MessageBoxImage.Warning);
+								MessageBoxButton.OK, MessageBoxImage.Warning);
 				return true;
 			}
 		}

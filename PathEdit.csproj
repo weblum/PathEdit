@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -64,6 +65,8 @@
     <Compile Include="DirectoryBrowser.cs" />
     <Compile Include="Error.cs" />
     <Compile Include="Hive.cs" />
+    <Compile Include="IRegistryEditor.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="RegistryEditor.cs" />
     <Compile Include="Script.cs" />
     <Compile Include="StringEditor.xaml.cs">
