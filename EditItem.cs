@@ -97,6 +97,10 @@ namespace PathEdit
 		{
 			if (hive != hiv)
 				return true;
+
+			if (data.Contains(pathString))
+				return true;
+
 			switch (location)
 			{
 				case Location.Beginning:
@@ -107,7 +111,6 @@ namespace PathEdit
 					return true;
 				default:
 					throw new ArgumentOutOfRangeException();
-
 			}
 		}
 

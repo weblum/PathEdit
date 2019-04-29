@@ -9,7 +9,7 @@ namespace UnitTest
 	public class TestEditItem
 	{
 		// This is the original list of paths at the beginning of each test.
-		private static readonly string[] Original = {"The", ToDelete, "In", "Spain"};
+		private static readonly string[] Original = {"The", Existing, "In", "Spain"};
 
 		// This is the modifiable list constructed at the beginning of each
 		// test.
@@ -18,8 +18,9 @@ namespace UnitTest
 		// This is the new path that is supposed to be added by each test.
 		private const string TestPath = "TestPath";
 
-		// This is the old path that is supposed to be deleted.
-		private const string ToDelete = "Rain";
+		// This is a path that is already on the list, and which is either to
+		// be deleted or is there to check that duplicates are not added.
+		private const string Existing = "Rain";
 
 		[SetUp]
 		public void MakePathList()
@@ -36,7 +37,7 @@ namespace UnitTest
 			// in the middle of the User hive.
 
 			// Arrange
-			EditItem sut = new EditItem(ToDelete, EditItem.Action.Delete);
+			EditItem sut = new EditItem(Existing, EditItem.Action.Delete);
 
 			// Act
 			sut.Execute(Hive.User, pathList);
@@ -53,7 +54,7 @@ namespace UnitTest
 			// in the middle of the System hive.
 
 			// Arrange
-			EditItem sut = new EditItem(ToDelete, EditItem.Action.Delete);
+			EditItem sut = new EditItem(Existing, EditItem.Action.Delete);
 
 			// Act
 			sut.Execute(Hive.System, pathList);
@@ -69,7 +70,7 @@ namespace UnitTest
 			// Verify that a null entry in a hive is not deleted.
 
 			// Arrange
-			EditItem sut = new EditItem(ToDelete, EditItem.Action.Delete);
+			EditItem sut = new EditItem(Existing, EditItem.Action.Delete);
 
 			// Act
 			pathList[1] = null;
@@ -240,6 +241,74 @@ namespace UnitTest
 			// Arrange
 			EditItem sut = new EditItem(TestPath, EditItem.Action.Add,
 				Hive.System, EditItem.Location.End);
+
+			// Act
+			sut.Execute(Hive.User, pathList);
+
+			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
+		}
+
+		[Test]
+		public void Execute_AddSystemBeginAlready_DoesNotAdd()
+		{
+			// Verify that the SUT does not add a string to the beginning of
+			// system the hive if it is already in the hive.
+
+			// Arrange
+			EditItem sut = new EditItem(Existing, EditItem.Action.Add,
+				Hive.System, EditItem.Location.Beginning);
+
+			// Act
+			sut.Execute(Hive.System, pathList);
+
+			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
+		}
+
+		[Test]
+		public void Execute_AddSystemEndAlready_DoesNotAdd()
+		{
+			// Verify that the SUT does not add a string to the end of the
+			// system hive if it is already in the hive.
+
+			// Arrange
+			EditItem sut = new EditItem(Existing, EditItem.Action.Add,
+				Hive.System, EditItem.Location.End);
+
+			// Act
+			sut.Execute(Hive.System, pathList);
+
+			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
+		}
+
+		[Test]
+		public void Execute_AddUserBeginAlready_DoesNotAdd()
+		{
+			// Verify that the SUT does not add a string to the beginning of
+			// the user hive if it is already in the hive.
+
+			// Arrange
+			EditItem sut = new EditItem(Existing, EditItem.Action.Add,
+				Hive.User, EditItem.Location.Beginning);
+
+			// Act
+			sut.Execute(Hive.User, pathList);
+
+			// Assert
+			CollectionAssert.AreEqual(Original, pathList);
+		}
+
+		[Test]
+		public void Execute_AddUserEndAlready_DoesNotAdd()
+		{
+			// Verify that the SUT does not add a string to the end of
+			// the user hive if it is already in the hive.
+
+			// Arrange
+			EditItem sut = new EditItem(Existing, EditItem.Action.Add,
+				Hive.User, EditItem.Location.End);
 
 			// Act
 			sut.Execute(Hive.User, pathList);
