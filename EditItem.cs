@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace PathEdit
 {
@@ -98,8 +97,8 @@ namespace PathEdit
 			if (hive != hiv)
 				return true;
 
-			if (data.Contains(pathString))
-				return true;
+            if (IsDuplicate(pathString, data))
+                return true;
 
 			switch (location)
 			{
@@ -134,6 +133,16 @@ namespace PathEdit
 
 			return inp.EndsWith(@"\") ? inp.Substring(0, inp.Length - 1) : inp;
 		}
+
+        private static bool IsDuplicate(string candidate, IList<string> data)
+        {
+            foreach (var element in data)
+            {
+                if (PathEqual(candidate, element))
+                    return true;
+            }
+            return false;
+        }
 
 		private static bool PathEqual(string candidate, string target)
 		{
